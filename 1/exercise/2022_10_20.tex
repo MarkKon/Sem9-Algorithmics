@@ -1,6 +1,6 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
-\usepackage{../utils/personalmacros}
+\usepackage{../../utils/personalmacros}
 
 \title{Algorithmics Exercise 1}
 \author{Konstantin Mark}
@@ -10,6 +10,47 @@
 
 \maketitle
 
-\section{Introduction}
+\begin{exercise}[$A*$ Algorithm]
+    Perform the $A*$ Algorithm on the following graph in order to find a shortest path from $s$ to $t$. In which order are the nodes expanded, and when are which nodes reached? Show the content of the priority queue at each iteration.
+\end{exercise}
+
+\begin{exercise}[$A*$ Admissible/Monotonic Heuristics]
+    Argue whether or not the heuristic function in the above example is admissible and/or monotonic. Consider the $8$-Puzzle discussed in the lecture. Show whether or not the two suggested heuristics $h_1$ and $h_2$ are admissible and/or monotonic
+\end{exercise}
+
+\begin{exercise}[$A*$ Algorithm for an Euclidean Graph]
+    Consider an undirected graph whose nodes correspond to points in the Euclidean plane. Instead of directly applying the Euclidean distance in a heuristic $h(x)$, we multiply it by a factor $\alpha>1$, i.e.,
+    \begin{equation*}
+        h(x) = \alpha \cdot \sqrt{
+            (x_1-t_1)^2+(x_2-t_2)^2
+        },   
+    \end{equation*}
+    where $x= (x_1,x_2)\in V$ is an arbitrary node and $t= (t_1,t_2)$ the target node. What might be a motivation for doing this? Is the corresponding $A*$ algorithm still guaranteed to yield a shortest path? Prove or disprove this. How about monotonicity?
+\end{exercise}
+
+\begin{exercise}[Planar Bipartite Graphs]\label{ex:planBipGraphs}
+    Show that $|E|\leq 2|V| - 4$ holds for any simple planar bipartite graph with $|V|\geq 3$ vertices and $|E|$ edges.
+\end{exercise}
+
+\begin{exercise}[Non-planarity of Bipartite Graph $K_{3,3}$]
+    Prove that the bipartite complete graph $K_{3,3}$ is not planar, i.e., it is not possible to draw the graph in the Euclidean plane without crossing edges.\\
+    Do this without using the above property (Exercise \ref{ex:planBipGraphs}), Kuratowski's theorem, and Wagner's theorem.
+\end{exercise}
+
+\begin{exercise}[Miller-Rabin Primality Test]
+    The primality test of Miller-Rabin uses a function $Witness(a,n)$, which checks for two positive integer numbers $a$ and $n$ if 
+    \begin{equation*}
+        a^{n-1} \equiv 1 }\mod n
+    \end{equation*}
+    holds. Perform this algorithm for $a = 11$ and $n = 161$. Write down the values of all variables for each iteration. What can you conclude from the result?
+\end{exercise}
+
+\begin{exercise}[Randomized Algorithm for $3$-Coloring of a Graph]
+    Given an undirected graph $G= (V,E)$, a $3$-Coloring is an assignment of one of three colors, e.g., red, green, or blue, to each node so that two adjacent nodes do not have the same color. In an optimization variant of this problem, we maximize the number of satisfied edges, i.e. $\max|\{(u,v)\in E| u \text{ and } v \text{have different colors}\}|$. Find a simple randomized algorithm that satisfies at least $\frac23$ of all edges in the expected case, if such a solution exists. Prove this expectation. Moreover, either prove that such a solution always exists for any instance or give an example of an instance where this is not the case. What is the asymptotic run time of the algorithm? Is your algorithm a Monte Carlo or a Las Vegas approach?
+\end{exercise}
+
+\begin{exercise}
+    Continuing with the above example, how can you turn your algorithm into a $\frac23$-approximation algorithm? Moreover, derive a reasonable bound for the expeted runtime of this extended algorithm.
+\end{exercise}
 
 \end{document}
