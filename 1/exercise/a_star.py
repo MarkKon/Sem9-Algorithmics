@@ -28,7 +28,7 @@ class DirectedGraph(object):
         return edge[2]
     return None
   
-  def astar(self, start_node, end_node, heuristic):
+  def astar(self, start_node, end_node, heuristic, printProcess = False):
     # Undiscovered nodes as priority queue
     open_set = PriorityQueue()
     open_set.put(start_node, 0)
@@ -41,24 +41,28 @@ class DirectedGraph(object):
     f_score = {}
     f_score[start_node] = heuristic[start_node]
 
-    print("Start heap: ", open_set.elements)
+    if printProcess:
+      print("Start heap: ", open_set.elements)
 
     while not open_set.empty():
       current = open_set.get()
 
       if current == end_node:
-        print("Found path with cost", g_score[current])
-        print("Final f_score dictionary", f_score)
-        return True
+        if printProcess:
+          print("Found path with cost", g_score[current])
+          print("Final f_score dictionary", f_score)
+        return f_score[end_node]
 
       for neighbor in self.neighbors(current):
 
         tentative_g_score = g_score[current] + self.cost(current, neighbor)
 
         if tentative_g_score < g_score[neighbor]:
-          print("coming from", current, "to", neighbor)
+          if printProcess:
+            print("coming from", current, "to", neighbor)
           g_score[neighbor] = tentative_g_score
           f_score[neighbor] = tentative_g_score + heuristic[neighbor]
           open_set.put(neighbor, f_score[neighbor])
-          print("the heap is now: ", open_set.elements)
-    return None
+          if printProcess:
+            print("the heap is now: ", open_set.elements)
+    
