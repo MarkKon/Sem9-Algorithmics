@@ -28,15 +28,6 @@ class DirectedGraph(object):
         return edge[2]
     return None
   
-  def reconstruct_path(self, came_from, start, goal):
-    current = goal
-    path = [current]
-    while current != start:
-      current = came_from[current]
-      path.append(current)
-    path.reverse()
-    return path
-
   def astar(self, start_node, end_node, heuristic):
     # The open set is the set of nodes we have discovered but not yet
     # visited.  It is a priority queue, with the lowest cost node at the
@@ -68,7 +59,7 @@ class DirectedGraph(object):
       if current == end_node:
         print("Found path with cost", g_score[current])
         print("Final f_score dictionary", f_score)
-        return self.reconstruct_path(came_from, current, end_node)
+        return True
 
       # closed_set.add(current)
 
@@ -80,8 +71,7 @@ class DirectedGraph(object):
 
         if tentative_g_score < g_score[neighbor]:
           came_from[neighbor] = current
-          print("coming from ", current)
-          print("to ", neighbor)
+          print("coming from", current, "to", neighbor)
           g_score[neighbor] = tentative_g_score
           f_score[neighbor] = tentative_g_score + heuristic[neighbor]
           open_set.put(neighbor, f_score[neighbor])
