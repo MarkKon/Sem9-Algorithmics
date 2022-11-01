@@ -1,0 +1,112 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{../../utils/personalmacros}
+
+\title{Algorithmics Exercise 2}
+\author{Konstantin Mark}
+\date{November 2022}
+
+\begin{document}
+
+\maketitle
+
+
+\listoftheorems[ignoreall,show={exercise}]
+
+\newpage
+
+\begin{exercise}[Covering the 1's]
+    Assume you are given an $n\times m$ matrix $M$ containing only $0$'s and $1$'s. The \textit{lines} of the matrix are its rows and columns; hence the matrix has $n+m$ lines. Show that you can find a smallest set of lines containing all the $1$'s in polynomial time. Illustrate your solution with an example.
+\end{exercise}
+\begin{solving}
+    Denote the columns of the matrix by $C = \{c_1,\dots, c_m\}$, the rows of the matrix by $R = \{r_1,\dots ,r_n\}$. Construct an undirected graph $(G, E)$ with all lines as nodes $G = C\cup R$ and edges $E = \{ (c_i, r_j) : M_{i,j} = 1\}$. Clearly this graph is bipartite. 
+    \begin{proposition}
+        A set $X\subseteq C\cup R$ is a smallest set of lines containing all the $1$'s if and only if it is a minimal vertex cover of $(G, E)$.
+    \end{proposition}
+    \begin{proof}
+        Let $X$ be a vertex cover, and $i, j$ so that $M_{i,j} = 1$ then by vertex cover property, as the edge $(c_i, r_j)\in E$ either $c_i$ or $r_j$ are in $X$. Similarly, for $X$ a smallest set of lines containing all $1$'s and $e:= (c_i, r_j)\in E$ , then $M_{i,j} = 1$ by definition of $E$. Let $x$ be the line in $X$ that contains this $1$. Then $x\in X$ covers the edge  $e$.\\
+        For the equivalence of the minimal sets, note that minimality is defined by cardinality on both the sets of lines containing all $1$'s and the vertex covers.
+    \end{proof}
+    As finding a minimal vertex cover can be done in polynomial time on bipartite graphs (Corollary of König-Ergerváry, slide 62), we can find a smallest set of lines that covers all $1$'s in polynomial time.
+
+    \begin{example}
+        Look at the following matrix: \begin{equation*}
+            M = \left(\begin{array}{ccc}
+                 1&0&1  \\
+                 0&1&0 \\
+                 1&0&1
+            \end{array}\right)
+        \end{equation*}
+
+        This has the following associated bipartite graph:\begin{equation*}
+            \begin{tikzcd}
+            c_1\arrow[r, no head] \arrow[rdd, no head]&r_1\\
+            c_2\arrow[r, no head]&r_2\\
+            c_3\arrow[r, no head]\arrow[ruu, no head]&r_3
+            \end{tikzcd}
+        \end{equation*}
+        which has the minimal vertex cover $c_1, r_2, c_3$. 
+    \end{example}
+\end{solving}
+\newpage
+
+\begin{exercise}[Matrix rounding]
+Consider the following extension to the feasible matrix rounding problem, where you are given a matrix with $n$ columns, where $n$ is even. In addition to row and column sums, we also consider the sum $S_1$ of the first $n/2$ columns. Argue that there always exists a feasible rounding that, in addition to row sums and column sums, also rounds $S_1$ up or down to an integer $S_1'$, such that $S_1'$ equals the sum of the first $n/2$ columns after the rounding.. Illustrate your solution with an example.    
+\end{exercise}
+
+\begin{solving}
+Consider the circulation problem $(V,E,\ell, c, d)$ that reduces the normal matrix rounding problem, let $\tilde C :=\{c_1, \dots, c_{n/2}\}$ be the first half of the column nodes. We modify the graph by adding one additional node $s_1$, moving all edges $s\to \tilde c \in \tilde C$ to be $s_1\to \tilde c\in \tilde C$ with the same upper and lower bounds and adding an additional edge $s\to s_1$ with lower bound $\lfloor S_1\rfloor$ and upper bound $\lceil S_1\rceil$. The demand of $s_1$ is - as all other demands in the circulation problem - $0$.
+
+\begin{theorem}
+    Feasible extended matrix rounding always exists.
+\end{theorem}
+\begin{proof}
+    As in the normal matrix rounding problem, the original data provides a circulation (including also $S_1$ as the flow from $s$ to $s_1$). Then the integrality theorem says that there is an integral solution and thus a feasible rounding on the extended problem.
+\end{proof}
+
+\begin{example}
+    Consider the matrix \be
+\end{example}
+
+\end{solving}
+
+\newpage
+
+\begin{exercise}[Diagonizable matrices]
+We consider $n\times n$ matrices where each element is $0$ or $1$. Let $M_{i,j}$ denote the entry of row $i$ and column $j$. We call a matrix \textit{diagonalized} if $M_{i,i}=1$ for $i = 1, \dots, n$. We call a matrix \textit{diagonalizable} if we can obtain a diagonalized matrix by permuting its columns and/or permuting its rows. \\
+For instance, the following matrix is diagonalizable, as we can swap the second and the third row, and then swap the first and the second column.\begin{equation*}
+    M = \left(\begin{array}{ccc}
+         0&1&1  \\
+         0&0&1\\
+         1&0&0
+    \end{array}\right)
+\end{equation*}
+Explain how to test in polynomial time (in $m$) whether a matrix is diagonalizable. \\
+Solve the problem by formulating it in terms of a perfect matching problem in a bipartite graph with $n+n$ vertices.
+\end{exercise}
+
+\begin{exercise}[Significant Edges]
+    An edge $(u,v)\in E$ of a flow network $N= (V,E,c,s,t)$ is \textit{significant} if there is a minimum cut $(A,B)$ such that $u\in A$ and $v\in B$. Design a polynomial-time algorithm that finds all significant edges of a given flow network. You may assume that all capacities are positive integers. Argue for correctness and polynomial running time of the algorithm. 
+\end{exercise}
+
+\begin{exercise}[Acyclic Flows]
+    Consider a flow network $N= (V,E,c,s,t)$. A flow $f$ in $N$ is called \textit{acyclic} if the digraph $G= (V,E')$ with $E'= \{e\in E: f(e)>0\}$ is acyclic. \begin{enumerate}
+        \item Give an example of a flow which is not acyclic, and 
+        \item show that every flow nework has a maximum flow that is acyclic.
+    \end{enumerate}
+    Hint: start with any maximum flow and make it acyclic.
+\end{exercise}
+
+\begin{exercise}[Unique Flows]
+    Let $N=(V,E,c,s,t)$ be a flow network such that $(V,E)$ is acyclic and all capacities are positive integers. Let $m= |E|$. Describe a polynomial-time algorithm that checks whether $N$ has a unique maximum flow, by solving $\leq m+1$ max-flow problems. Argue for correctness and polynomial running time of the algorithm.
+\end{exercise}
+
+\begin{exercise}[$k$-Edge Partitions]
+    Let $k$ be a positive integer. A \textit{$k$-edge partition} of a graph $G =(V,E)$ is a partition of $E$ into $k$ (possibly empty) sets $E_1,\dots, E_k$ such that every vertex $v\in V$ is incident to at most one edge from each set $E_i$, $1\leq i\leq k$. Show that every $k$-regular bipartite graph has a $k$-edge partition, and such a partition can be found in polynomial time (Hint: use induction on $k$).
+\end{exercise}
+
+\begin{exercise}[Cute Subsets]
+    Let $A_1,\dots, A_m$ be nonempty subsets of a set $S$ with $n$ elements. Call a sequence of $m$ \textit{distinct} elements $a_1,\dots, a_m\in S$ cute if $a_i\in A_i$ for $1\leq i\leq m$. Show that a cute sequence can be found (if it exists) in time that is polynomial in $n+m$.
+\end{exercise}
+
+\end{document}

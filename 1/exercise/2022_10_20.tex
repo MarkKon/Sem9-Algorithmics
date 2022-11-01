@@ -83,6 +83,18 @@ Found path with cost 11
     \end{equation*}
     where $x= (x_1,x_2)\in V$ is an arbitrary node and $t= (t_1,t_2)$ the target node. What might be a motivation for doing this? Is the corresponding $A*$ algorithm still guaranteed to yield a shortest path? Prove or disprove this. How about monotonicity?
 \end{exercise}
+\begin{solving}
+    Consider the following graph:
+    \[
+\begin{tikzcd}
+    t = (0,1)&&v = (1,2)\arrow[ll, "\frac1{10}"]\\
+    s=(0,0)\arrow[r, "\frac1{10}"']\arrow[u, "1"]&u = (1,0)\arrow[ur, "\frac1{10}"']
+\end{tikzcd}
+    \]
+\end{solving}
+Then clearly the fastest path goes over $u$ and $v$. However, for $\alpha = 10$, the algorithm will indeed first go to $t$ with $f$-value $1+10 = 11$. As any heuristic of the vertices $u,v$ is greater than the $f-value$ of $t$, the algorithm terminates with a wrong path.\\
+In the case that the heuristic is quite good however, e.g. when you want to find a way in an empty plane with very few obstacles, this will speed up the algorithm.
+
 \newpage
 
 \begin{exercise}[Planar Bipartite Graphs]\label{ex:planBipGraphs}
@@ -120,10 +132,73 @@ Found path with cost 11
 \end{tikzcd}\]
 \end{exercise}
 \begin{solving}
-    
-\end{solving}
+    Assume the graph is planar. We transform the graph in a way that $A,B,C,D$ form a rectangle. Then as $E$ and $F$ are connected by an edge, they have to be placed in the same face of $ABCD$, that is either the inner one: 
+    \[
+    \begin{tikzcd}
+        A &&& B\\
+        &E&F\\
+        D&&&C
+    \arrow[no head, from=1-1, to=1-4]
+    \arrow[no head, from=1-1, to=3-1]
+    \arrow[no head, from=1-4, to=3-4]
+    \arrow[no head, from=3-1, to=3-4]
+    \arrow[no head, from=2-2, to=2-3]
+    \end{tikzcd}
+    \]
+ or the outer one:
+ 
+    \[
+    \begin{tikzcd}
+        A &&& B\\
+        D&&&C\\
+        &E&F
+    \arrow[no head, from=1-1, to=1-4]
+    \arrow[no head, from=1-1, to=2-1]
+    \arrow[no head, from=1-4, to=2-4]
+    \arrow[no head, from=2-1, to=2-4]
+    \arrow[no head, from=3-2, to=3-3]
+    \end{tikzcd}
+    \]
+There are still some edges to connect. In the first case, the edges $DE, FC, BE$ can be connected, but then the edge $FA$ cannot exist without hitting any of the other edges:
+        \[
+    \begin{tikzcd}
+        A &&& B\\
+        &E&F\\
+        D&&&C
+    \arrow[no head, from=1-1, to=1-4]
+    \arrow[no head, from=1-1, to=3-1]
+    \arrow[no head, from=1-4, to=3-4]
+    \arrow[no head, from=3-1, to=3-4]
+    \arrow[no head, from=2-2, to=2-3]
+    \arrow[no head, from=3-1, to=2-2]
+    \arrow[no head, from=2-3, to=3-4]
+    \arrow[no head, from=2-2, to=1-4]
+    \arrow[no head, from=2-3, to=1-1, dashed, bend left=60]
+    \arrow[no head, from=2-3, to=1-1, dashed, bend right= 15, "?"]
+    \end{tikzcd}
+    \]
 
+In the other case, the same problem occurs:
+\[
+    \begin{tikzcd}
+        A&&&B\\
+        D&&&C\\
+        &E&F
+    \arrow[no head, from=1-1, to=1-4]
+    \arrow[no head, from=1-1, to=2-1]
+    \arrow[no head, from=1-4, to=2-4]
+    \arrow[no head, from=2-1, to=2-4]
+    \arrow[no head, from=3-2, to=3-3]
+    \arrow[no head, from=2-1, to=3-2]
+    \arrow[no head, from=2-4, to=3-3]
+    \arrow[no head, from=1-4, to=3-2, bend left= 80]
+    \arrow[no head, from=1-1, to=3-3, dashed]
+    \arrow[no head, from=1-1, to=3-3, dashed, bend right = 120]
+    \end{tikzcd}
+    \]
+\end{solving}
 \newpage
+
 \begin{exercise}[Miller-Rabin Primality Test]
     The primality test of Miller-Rabin uses a function $Witness(a,n)$, which checks for two positive integer numbers $a$ and $n$ if 
     \begin{equation*}
@@ -131,13 +206,85 @@ Found path with cost 11
     \end{equation*}
     holds. Perform this algorithm for $a = 11$ and $n = 161$. Write down the values of all variables for each iteration. What can you conclude from the result?
 \end{exercise}
+\begin{solving}
+Note that the binary representation of $160 = n-1$ is $10100000$. We get (from implementation in python):
+    \begin{verbatim}
+Iteration with i =  7
+result =  1
+As b_i = 1, result =  11
+Iteration with i =  6
+result =  121
+Iteration with i =  5
+result =  151
+As b_i = 1, result =  51
+Iteration with i =  4
+result =  25
+Iteration with i =  3
+result =  142
+Iteration with i =  2
+result =  39
+Iteration with i =  1
+result =  72
+Iteration with i =  0
+result =  32
+32
+    \end{verbatim}
+    Thus, as $32\neq 1$, $16$ is a witness for $161$ not prime. 
+\end{solving}
+\newpage
 
 \begin{exercise}[Randomized Algorithm for $3$-Coloring of a Graph]
-    Given an undirected graph $G= (V,E)$, a $3$-Coloring is an assignment of one of three colors, e.g., red, green, or blue, to each node so that two adjacent nodes do not have the same color. In an optimization variant of this problem, we maximize the number of satisfied edges, i.e. $\max|\{(u,v)\in E| u \text{ and } v \text{have different colors}\}|$. Find a simple randomized algorithm that satisfies at least $\frac23$ of all edges in the expected case, if such a solution exists. Prove this expectation. Moreover, either prove that such a solution always exists for any instance or give an example of an instance where this is not the case. What is the asymptotic run time of the algorithm? Is your algorithm a Monte Carlo or a Las Vegas approach?
+    Given an undirected graph $G= (V,E)$, a $3$-Coloring is an assignment of one of three colors, e.g., red, green, or blue, to each node so that two adjacent nodes do not have the same color. In an optimization variant of this problem, we maximize the number of satisfied edges, i.e. $\max|\{(u,v)\in E| u \text{ and } v \text{have different colors}\}|$.\begin{enumerate}
+        \item  Find a simple randomized algorithm that satisfies at least $\frac23$ of all edges in the expected case, if such a solution exists.
+        \item Prove this expectation.
+        \item Moreover, either prove that such a solution always exists for any instance or give an example of an instance where this is not the case.
+        \item What is the asymptotic run time of the algorithm? Is your algorithm a Monte Carlo or a Las Vegas approach?
+    \end{enumerate} 
 \end{exercise}
+\begin{solving}~
+\begin{enumerate}
+    \item \begin{verbatim}
+        Input Graph G = (V, E)
+        for v in V:
+            color[v] = random(1,3)
+    \end{verbatim}
+    \item Let $e= (u,v)\in E$ and $i$ be the color of $u$. Then $$\mathbb P(u\text{ and } v \text{ have different colors}) = \mathbb P(v\text{ does not have color }i) = \frac23.$$ Thus, $\mathbb E(e \text{fulfils edge condition}) = \frac 23$, and $$\mathbb E(\text{number of edges fulfilling edge condition}) = \sum_{e\in E}\frac 23 = \frac23|E|.$$
+    \item Let $c: V\to \{1,3\}$ be a coloring with a maximal number of satisfied edges. Assume, that less than $\frac23|E|$ edges are satisfied. Take any vertex $v$, of whose adjacent edges less than $\frac23$ are satisfied (clearly this exists in such a graph). Then of the colors that are not the same as the color of $v$, there must, by the pigeon hole principle exist one that is on (strictly) less than one third of the adjacent vertices. Changing the color of $v$ to this color leads to a coloring with more satisfied edges, in contradiction to the maximality. The maximal coloring must thus satisfy more than two thirds of the edges.
+    \item Under the assumption that generating a random number is $O(1)$, the algorithm has $O(|V|)$. This is clearly a Monte-Carlo algorithm: correctness of output sacrificed for time.
+\end{enumerate}
+\end{solving}
+\newpage
 
 \begin{exercise}
-    Continuing with the above example, how can you turn your algorithm into a $\frac23$-approximation algorithm? Moreover, derive a reasonable bound for the expeted runtime of this extended algorithm.
+    Continuing with the above example, how can you turn your algorithm into a $\frac23$-approximation algorithm? Moreover, derive a reasonable bound for the expected run time of this extended algorithm.
 \end{exercise}
+\begin{solving}
+    Take the following algorithm:
+    \begin{verbatim}
+        Input Graph G = (V, E)
+        done = False
+        |E| = len(E)
+        do:
+            s = 0
+            for v in V:
+                color[v] = random(1,3)
+            for e in E:
+                if color[e[0]] != color[e[1]]:
+                    s += 1
+        until: s <= |E|/3
+    \end{verbatim}
+    Clearly, the inside of the do...until loop has run time of order $O(|V|+ O|E|)$. We thus need lower bound for the probability $p$ that any iteration succeeds. However,\begin{equation*}
+        \begin{split}
+            \frac23 |E| &= \mathbb E(\text{number of edges satisfied})\\
+            & = \sum_{0\leq j\leq |E|} j \mathbb P(j \text{j edges satisfied})\\
+            & \leq \frac{2|E|-1}3 \sum_{j<\frac 23|E|}\mathbb P(j \text{ edges satisfied}) + |E| \sum_{j\geq \frac23 |E|}\mathbb P(j \text{ edges satisfied})\\
+            &=  \frac{2|E|-1}3 (1-p) + |E|p\\
+            & = \frac{2|E|-1}3 + \frac{|E|+ 1}3p
+        \end{split} 
+    \end{equation*}
+    or $\frac13\leq \frac{|E|+ 1}3p $. Thus, $p \geq \frac1{|E|+1}$ and $O(|E|^2 + |E||V|)$ is an upper bound on the run time.
+\end{solving}
+
+
 
 \end{document}
