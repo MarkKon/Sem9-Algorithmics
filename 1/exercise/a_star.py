@@ -56,10 +56,11 @@ class DirectedGraph(object):
       for neighbor in self.neighbors(current):
 
         tentative_g_score = g_score[current] + self.cost(current, neighbor)
-
+        if printProcess:
+          print("Setting tentative score ", tentative_g_score, " at neighbor", neighbor)
         if tentative_g_score < g_score[neighbor]:
           if printProcess:
-            print("coming from", current, "to", neighbor)
+            print("expanding from", current, "to", neighbor)
           g_score[neighbor] = tentative_g_score
           f_score[neighbor] = tentative_g_score + heuristic[neighbor]
           open_set.put(neighbor, f_score[neighbor])
