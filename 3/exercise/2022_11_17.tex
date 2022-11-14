@@ -1,0 +1,91 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{../../utils/personalmacros}
+
+\title{Algorithmics Exercise 2}
+\author{Konstantin Mark}
+\date{November 2022}
+
+\begin{document}
+
+\maketitle
+
+
+\listoftheorems[ignoreall,show={exercise}]
+
+\newpage
+
+\begin{exercise}[Classification of Problems]
+    Let $\mathcal P_1, \mathcal P_2, \mathcal P_3, \mathcal P_4, \mathcal P_5$ be decidable problems where $k$ is the parameter and $n$ denotes the size of the input. Consider the following statements:
+    \begin{enumerate}
+        \item There exists an algorithm that solves $\mathcal P_1$ in time $\mathcal O (n^{k^2})$
+        \item There exists an algorithm that solves $\mathcal P_2$ in time $\mathcal O(k^n)$ and $\mathcal P_2$ does not admit a polynomial kernel.
+        \item There exists an algorithm that solves $\mathcal P_3$ in time $\mathcal O(n^{\log k})$, but $\mathcal P_3$ cannot be solved in time $\mathcal O(2^k\cdot n^2)$.
+        \item There exists no algorithm that solves $\mathcal P_4$ in time $\mathcal O(2^{k^2}\cdot n)$ but $\mathcal P_4$ admits a kernel.
+        \item $\mathcal P_5$ is NP-complete, even if $k=10$ is fixed.
+    \end{enumerate}
+    For each of these problems and each of the complexity classes FPT and XP specify whether the problem definitely belongs to the class, definitely does not belong to the class (assuming standard complexity assumptions), or that this cannot be determined from the provided information.
+\end{exercise}
+
+\begin{solving}
+    
+\end{solving}
+
+
+\newpage
+\begin{exercise}[Min-Ones-3-SAT]
+    Design an FPT algorithm for the following problem:
+    \begin{mdframed} \textsc{Min-Ones-3-SAT} \\
+        \textit{Instance:}A 3-CNF formula $F$ and an integer $k$\\
+\textit{Parameter:}$k$\\
+\textit{Question:} Is there a satisfying assignment for $F$ with at most $k$ variables set to true?
+  \end{mdframed}
+\end{exercise}
+
+\begin{exercise}[Min-Ones-SAT]
+    Consider now a generalization of the previous problem.
+    \begin{mdframed} \textsc{Min-Ones-3-SAT} \\
+        \textit{Instance:}A CNF formula $F$ and an integer $k$\\
+\textit{Parameter:}$k$\\
+\textit{Question:} Is there a satisfying assignment for $F$ with at most $k$ variables set to true?
+  \end{mdframed}
+
+  Show that \textsc{Min-Ones-SAT} is unlikely to be FPT(i.e., is not FPT under established complexity assumptions).\\
+  \textbf{Hint:} Proceed as follows. You want to show that \textbf{if} there were to exist a fixed-parameter algorithm for \textsc{Min-Ones-SAT}, \textbf{then} this would allow us to solve at least one problem which the slides claim is \textbf{not FPT} by a fixed-parameter algorithm.
+\end{exercise}
+
+
+\begin{exercise}[Deletion to Single Edges]
+    Consider the following problem:
+    \begin{mdframed} \textsc{Deletion to Single Edges} \\
+        \textit{Instance:}A graph $G$ and an integer $k$\\
+\textit{Parameter:}$k$\\
+\textit{Question:} Does $G$ contain a vertex set $X$ of size at most $k$ such that deleting $X$ results in a graph of degree at most $1$?
+  \end{mdframed}
+  Design an FPT or a kernelization algorithm for this problem, and argue why it is correct.
+\end{exercise}
+
+
+\begin{exercise}[Clique Parametrized by Vertex Cover]
+    Give an FPT algorithm for the following problem and specify its running time (in $\mathcal O$ notation):
+    \begin{mdframed} \textsc{Clique Parametrized by Vertex Cover} \\
+        \textit{Instance:}A graph $G$, a vertex cover $X$ of $G$ and an integer $p$\\
+\textit{Parameter:}$k = |X|$\\
+\textit{Question:} Does $G$ contain a clique of size at least $p$?
+  \end{mdframed}
+\end{exercise}
+
+\begin{exercise}
+    A feedback vertex set in a graph $G$ is a set of vertices $S\subseteq V(G)$ such that $G[V(G)\backslash S]$ contains no cycle. The \textsc{Feedback Vertex Set} problem gets as input a graph $G$ and a parameter $k$ and asks whether there exists a feedback vertex set of size at most $k$. \\
+    Design a kernelization rule that takes an instance $(G,k)$ of \textsc{Feedback Vertex Set} where $G$ has a vertex of degree at most two, runs in polynomial time and returns an equivalent instance $(G', k)$ with $V(G') < V(G)$. What does the instance look like after you exhaustively apply this rule?
+\end{exercise}
+
+\begin{exercise}
+    Find an FPT algorithm for \textsc{Feedback Vertex Set} by proceeding as follows.\begin{enumerate}
+        \item Let $G$ be a graph where every vertex has degree at least three. Show that $G$ contains a cycle of length at most $2\lceil\log(|V(G)|)\rceil$.
+        \item Use this and the kernelization rule from the previous exercise to design a $\log(n)^k\cdot n^c$-time algorithm for \textsc{Feedback Vertex Set}.
+        \item Find a function $f$ such that $\log(n)^k\cdot n^c\leq f(k)\cdot n^{c+1}$.
+    \end{enumerate}
+\end{exercise}
+
+\end{document}
