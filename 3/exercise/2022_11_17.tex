@@ -26,13 +26,17 @@
     \end{enumerate}
     For each of these problems and each of the complexity classes FPT and XP specify whether the problem definitely belongs to the class, definitely does not belong to the class (assuming standard complexity assumptions), or that this cannot be determined from the provided information.
 \end{exercise}
-
-\begin{solving}
-    
+\begin{solving}~
+    \begin{enumerate}
+        \item Clearly XP, as it has the form $\mathcal O(n^{f(k)}$ with $f(k) = k^2$. May or may not be FTP (there may exist a better algorithm but we know nothing about that)
+        \item The algorithm with time $\mathcal O(k^n)$ does not make this problem XP (but it may very well be). It can also be FTP despite admitting no polynomial kernel, as it can still have a non-polynomial kernel. Thus we know nothing about this problem
+        \item Clearly XP (with $f(k) = \log k$). FTP unknown, as it could still have e.g. the form $\mathcal O(2^k\dot n^3)$
+        \item By the slides we know that a problem is FTP iff it admits a kernel. Thus this algorithm is FTP and therefore also XP.
+        \item Assume it is FPT/XP. Then $f(10)\cdot p(n)$, $n^{f(10}$ is non-polynomial so P=NP, which we assume not to hold true.
+    \end{enumerate}
 \end{solving}
-
-
 \newpage
+
 \begin{exercise}[Min-Ones-3-SAT]
     Design an FPT algorithm for the following problem:
     \begin{mdframed} \textsc{Min-Ones-3-SAT} \\
@@ -41,10 +45,22 @@
 \textit{Question:} Is there a satisfying assignment for $F$ with at most $k$ variables set to true?
   \end{mdframed}
 \end{exercise}
+\begin{solving}
+    Let $F = \bigwedge_{i=1}^n(\underbrace{x_{i,1}\lor x_{i,2}\lor x_{i,3}}_{=: c_i})$ with $x_{i,j}$ literals of the form $p_\ell$ or $\lnot p_\ell$
+    We define the following branching algorithm: First, set all variables to false.
+    \begin{enumerate}
+        \item If all clauses fulfilled: Output True.
+        \item If $k=0$ and not all clauses fulfilled: output False for this branch.
+        \item Choose a clause $c_i$ with $x_{i,j} = p_\ell$ (i.e. not $x_{i,j} = \lnot p_\ell$) and $p_\ell = 0$. Now set $k:= k-1$ and branch: Either $p_{\ell}$ has to be true, or any other $p_{\ell'}$ with $x_{i,j'} = p_{\ell'}$ has to be true. 
+        \item If this is not possible: Output False for this branch.
+    \end{enumerate}
+    The tree constructed as such has at most 3 children per node and a depth of $k$. Every iteration above has complexity $\mathcal O(n)$, so the total runtime is $\mathcal O(3^k\cdot n )$.
+\end{solving}
+\newpage
 
 \begin{exercise}[Min-Ones-SAT]
     Consider now a generalization of the previous problem.
-    \begin{mdframed} \textsc{Min-Ones-3-SAT} \\
+    \begin{mdframed} \textsc{Min-Ones-SAT} \\
         \textit{Instance:}A CNF formula $F$ and an integer $k$\\
 \textit{Parameter:}$k$\\
 \textit{Question:} Is there a satisfying assignment for $F$ with at most $k$ variables set to true?
@@ -53,7 +69,17 @@
   Show that \textsc{Min-Ones-SAT} is unlikely to be FPT(i.e., is not FPT under established complexity assumptions).\\
   \textbf{Hint:} Proceed as follows. You want to show that \textbf{if} there were to exist a fixed-parameter algorithm for \textsc{Min-Ones-SAT}, \textbf{then} this would allow us to solve at least one problem which the slides claim is \textbf{not FPT} by a fixed-parameter algorithm.
 \end{exercise}
-
+\begin{solving}
+    Assume there is a FPT algorithm for \textsc{Min-Ones-SAT}. Consider the \textsc{Hitting Set problem}:
+    \begin{mdframed} \textsc{Hitting Set problem} \\
+        \textit{Instance:}A ground set $U$, a set $\mathcal F$ of subsets of $U$ and an integer $k$\\
+\textit{Parameter:}$k$\\
+\textit{Question:} Does there exist a set $X\subseteq U$ of cardinality at most $k$ which hits each subset in $\mathcal F$
+  \end{mdframed}
+Now let $U= \{u_1,\dots, u_n\}$, $\mathcal F = \{C_1,\dots, C_m\}$ be an instance of this problem. Let $p_k, k\in \{1,\dots, n\}$ be variables. Now define $c_i := \bigvee_{u_j\in C_i}p_j$ and $F= \bigwedge_{i\in \{1,\dots ,m\}} c_i$. By assumption find an assignment $\hat p$ with at most $k$ variables set to true in polynomial time.
+Let $X:=\{u_j: j\in \{1,\dots, n\}, \hat p_j = 1 \}$, then $X\subseteq U$ hits every subset. We have thus also constructed an FPT algorithm for the \textsc{Hitting Set problem}. It is thus unlikely for \textsc{Min-Ones-SAT} to be FPT, as the \textsc{Hitting Set problem} is NP-hard.
+\end{solving}
+\newpage
 
 \begin{exercise}[Deletion to Single Edges]
     Consider the following problem:
@@ -64,6 +90,59 @@
   \end{mdframed}
   Design an FPT or a kernelization algorithm for this problem, and argue why it is correct.
 \end{exercise}
+\begin{solving}
+    First note that if a node $v$ has degree $\ell>1$, then either we have to delete $v$ or all adjacent edges but one. Also note that $\mathrm{deg}(G)\leq k+1$ is a necessary condition for this problem to be solvable. Thus the following branching algorithm makes sense:\\
+    If the graph has degree $> k+1$: Output False (this can be determined in $\mathcal O(n^2)$.\begin{enumerate}
+        \item If graph has degree 1: Output True ($O(n)$ to check)
+        \item If $k = 0$ and the graph still has a node with degree $\geq 2$, output False ($\mathcal O(n^2)$ to check) for this branch
+        \item If there is still a node $v$ with degree $\ell>1$ (neighbors $N$), then do the following branching: either delete $v$ (and set $k->k-1$ or the sets $N\backslash\{n\}$ for all $n\in N$ (and set $k-> k-\ell$. As $|N|\leq k_0+1$, this generates at most $k_0+2$ new branches. 
+    \end{enumerate}
+    This tree has a depth of at most $k$. Thus, in total, this algorithm has at most running time $\mathcal O(k^{k+2}\cdot n^2)$ and is FPT.
+\end{solving}
+\newpage
+
+% TODO!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+\begin{exercise}[Connected Dominating Set]
+    Consider the following problem:
+    \begin{mdframed} \textsc{Connected Dominating Set on Planar Graphs} \\
+        \textit{Instance:}A planar graph $G$ and an integer $k$\\
+\textit{Parameter:}$k$\\
+\textit{Question:} Does there exist a dominating set $D$ of size at most $k$ in $G$ such that $G[D]$ is connected?
+  \end{mdframed}
+  Design an FPT or a kernelization algorithm for this problem. You are allowed to use the following fact as a black box:\\
+  \textbf{Fact:} Every planar graph has a vertex of degree at most 5.
+\end{exercise}
+\begin{solving}
+    We want to adapt the bounded search tree algorithm for the \textsc{Parameterized Dominating Set'} algorithm discussed in the Lecture: \begin{enumerate}
+        \item if $k = 0$ and there is an \textit{undominated vertex} output false (for this branch)
+        \item if $k\geq 0$ and there are no \textit{undominated vertices}, output true
+        \item pick an arbitrary \textit{undominated} vertex $v$
+        \item Branch into 4 options ($v$ or a neighbor of $v$) to put at least vertex into the dominating set
+        \item Delete the chosen vertex and mark all of its neighbors as \textbf{dominated}
+        \item restart on the remaining graph with $k:= k-1$
+    \end{enumerate}
+    First of all this needs to be adapted to the fact that we now don't have an upper bound on the degree of the graph but instead can always find a vertex with degree $\leq 5$. We need a way keep the algorithm in check however: the vertex we find may be anywhere and we need to find a way to connect it \\
+
+    For this purpose we use the following dynamic programming component in our algorithm: Each branch will subdivide the graph into more connected components. Each connected component has a "connection vertex" that helps us connect the sub-problems. We start with the graph $G$ that will be connected (if not: output false)
+    \begin{enumerate}
+        \item if $k<0$ output false (for this branch)
+        \item Pick any connected component of the graph that still needs to be considered (i.e. not marked true), if all connected components marked true, output true
+        \item Pick a vertex $v$ with degree $\leq 5$
+        \item Branch: there are two options:\begin{enumerate}
+            \item \label{a} Put $v$ into the dominating set and mark $v$ and its neighbors as dominated. Set $k:= k-1$.\begin{itemize}
+                \item If there are no undominated vertices, check if $v$ can be connected to the "connecting vertex" of this connected component (this takes at most two other vertices by rules of domination) and deduct the number added from $k$.
+                \item Otherwise delete $v$ from $G$, $k:= k-1$. There are now at most five connected components $G_1,\dots, G_5$ of the new graph. Save the neighbors of $v$ that belong to the connected components as their "connection vertices" respectively. If any of the connected components is dominated now already dominated, mark it as true. If any of the connected components can be marked as fully dominated by including the connection vertex, include the connection vertex, set $k:= k-1$ and mark the connected component as true
+            \end{itemize}
+        \item Do not put $v$ into the dominating set: Here we just delete $v$. \begin{itemize}
+            \item If $G$ is now disconnected, output false for this branch
+            \item otherwise, due to the dominating property one of the neighbors of $v$ has to be in $D$. We therefore put each neighbor $w$ into the dominating set and repeat the same branching into connected components as in \ref{a}.
+            \end{itemize}
+        \end{enumerate}           
+    \end{enumerate}
+    All the steps in \ref{a} have running time $\mathcal O(n)$. As there are maximally $6\cdot 5$ branches per iteration and each iteration reduces $k$ by at least one (i.e. the tree has depth $k$) the total running time is $\mathcal O(30^k\cdot n)$, so this is a FPT algorithm.
+    
+\end{solving}
+\newpage
 
 
 \begin{exercise}[Clique Parametrized by Vertex Cover]
@@ -74,18 +153,53 @@
 \textit{Question:} Does $G$ contain a clique of size at least $p$?
   \end{mdframed}
 \end{exercise}
+\begin{solving}
+    Note that a clique is a subgraph that is fully connected. Therefore, there can be at most one point of the clique that is not in $X$. In particular, if $k<p-1$, there is no clique of size $\geq p$. Assume now thus $k\geq p-1$ (otherwise just output False). Now iterate over all $x\in X$:\begin{enumerate}
+        \item Define $A_x:= \{y\in X: (x,y)\in E\}, B_x := \{y\in V: (y,x)\in E\}$. If $|A_x|< p-2$ or $|B_x|<p$, we can clearly not find a clique that contains $x$. Set $X <- X\backslash\{x\}$ and continue with the next iteration of the loop.
+        \item Otherwise we can just try all $\binom{|A_x|}{p-2}$ combinations of $p-2$ Elements of $A_x$ if they form a clique together with $x$ ($\mathcal O(\binom{|A_x|}{p-2}\cdot (p-1)^2)\leq \mathcal O(2^kk^2$). If this does not work: $x$ is in no clique, Set $X<- X\backslash\{x\}$ and continue with next iteration. If it does work: As we have only found a clique of $p-1$ Elements (including $x$), we still have to find a $v\in B_x$ that is adjacent, which we can do by iterating over it in runtime $\mathcal O(n\cdot k)$. If such a $v$ exists we have found our clique, else $x$ cannot be an element of a clique and we can continue with the next iteration of the loop with $X = X\backslash\{x\}$.
+    \end{enumerate}
+The total runtime is thus $\mathcal O(k)\cdot (\mathcal O(n) + \mathcal O(2^k (k^2+ nk))) \leq \mathcal O(2^k k^3n).$
+\end{solving}
+\newpage
 
-\begin{exercise}
+\begin{exercise}[Feedback Vertex Set I]\label{ex:7}
     A feedback vertex set in a graph $G$ is a set of vertices $S\subseteq V(G)$ such that $G[V(G)\backslash S]$ contains no cycle. The \textsc{Feedback Vertex Set} problem gets as input a graph $G$ and a parameter $k$ and asks whether there exists a feedback vertex set of size at most $k$. \\
     Design a kernelization rule that takes an instance $(G,k)$ of \textsc{Feedback Vertex Set} where $G$ has a vertex of degree at most two, runs in polynomial time and returns an equivalent instance $(G', k)$ with $V(G') < V(G)$. What does the instance look like after you exhaustively apply this rule?
 \end{exercise}
+\begin{solving}
+    We define the following kernelization rules:
+    \begin{enumerate}
+        \item Delete all vertices with degree less or equal than 1 (These are definetly not part of a circle)
+        \item For a vertex $x$ with degree 2: remove the vertex and its two edges and inroduce a new edge that connects the two neighbors of $x$.
+    \end{enumerate}
+    Clearly this is polynomial in runtime and $|V(G')|< |V(G)|$. Furthermore, the instances are equivalent: if $x$ was not part of a cycle, then we neither create nor destroy any cycle and thus do not change whether this is a yes or a no instance. If $x$ was part of a cycle $C$, and $C$ was destroyed by $v_1\in S$ or $v_2\in S$, then  we can also destroy this cycle by putting $x$ into $S$ on the changed instance. Again, we don't change the outcome of the instance.\\
+    Finally, after applying this kernel until there is no more vertex of degree at most two, all vertices have degree at least three.
+\end{solving}
 
-\begin{exercise}
+\newpage
+\begin{exercise}[Feedback Vertex Set II]
     Find an FPT algorithm for \textsc{Feedback Vertex Set} by proceeding as follows.\begin{enumerate}
         \item Let $G$ be a graph where every vertex has degree at least three. Show that $G$ contains a cycle of length at most $2\lceil\log(|V(G)|)\rceil$.
         \item Use this and the kernelization rule from the previous exercise to design a $\log(n)^k\cdot n^c$-time algorithm for \textsc{Feedback Vertex Set}.
         \item Find a function $f$ such that $\log(n)^k\cdot n^c\leq f(k)\cdot n^{c+1}$.
     \end{enumerate}
 \end{exercise}
+\begin{solving}
+    \begin{enumerate}
+        \item We construct the BFS tree starting from any vertex. If we arrive at a node that we have already visited, we do not branch it off any further. As each vertex in this tree (if not a leaf) has at least two children, the depth of this tree is not bigger than $\lceil\log_2(|V(G)|)\rceil$. We can find a cycle by going down to a leaf, then jumping to the node where it was first found and going up the tree again. This cycle will thus have length at most  $2\cdot\lceil\log(|V(G)|)\rceil$.
+        \item We adapt the following branching algorithm:
+        \begin{itemize}
+            \item If $k\geq 0$ and we receive a cycle-free graph, we found a correct feedback vertex set.
+            \item If $k= 0$ and the graph still has a cycle, then the branch ends (False)
+            \item Apply Exercise \ref{ex:7} exhaustively to get a graph with degree at least $3$.
+            \item take a cycle of length at most $2\cdot\lceil\log(|V(G)|)\rceil$. At least one of the nodes of this cycle must be in $S$. Branch over the $2\cdot\lceil\log(|V(G)|)\rceil$ possibilities of deleting one of these nodes (and putting it in $S$).
+        \end{itemize}
+        The running time of this branching algorithm is $\mathcal O((\log n)^k\cdot n^c)$ where $\mathcal O(n^c)$ is the kernelization cost of one branch
+        \item Note that $\frac{\mathrm d}{\mathrm dx} \ln(x)^k = k\frac{ln(x)^{k-1}}{x}$ and thus by De L'Hospital: \begin{equation*}
+            \lim_{x\to \infty}\frac{ln(x)^k}{x} = \lim_{x\to \infty}k\frac{ln(x)^{k-1}}{x} =\dots = \lim_{x\to \infty}k!\frac{1}{x} = 0
+        \end{equation*}
+        Thus there exists $f(k)$ such that $ln(n)^k \leq f(k)n$ and thus the above algortihm is FPT.
+    \end{enumerate}
+\end{solving}
 
-\end{document}
+\end{document} 
