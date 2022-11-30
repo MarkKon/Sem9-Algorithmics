@@ -376,9 +376,57 @@
 \end{solving}
 \newpage
 
+%done
 \begin{exercise}[Dynamic Programming on Tree Decompositions]
     Given a graph $G=(V,E)$ and a funciton $w: V\to \mathbb Q$, the \textsc{Weighted Vertex Cover} problem asks for a vertex cover of minimum weight, where the weight $w(S)$ of a vertex set $S\subseteq V$ is defined as $w(S) = \sum_{v\in S} w(v)$. Prove that the \textsc{Weighted Vertex Cover} is fixed-parameter tractable parameterized by the treewidth of the input graph by designing an algorithm that performs dynamic programming on a (nice) tree decomposition of $G$.
 \end{exercise}
+\begin{solving}
+    Let $(T, \chi)$ with $T= (V', E')$ be a nice tree decomposition, that is, just consisting of leaves, join, forget, introduce nodes. \\
+    Now let $T_t$ be a subtree of $T$ with root $t$, $G_t:= G(\bigcup_{t'\in T_t}\chi(t')) = (V_t, E_t)$. In every dynamic programming step we want to consider vertex covers of $G_t$. Then let \begin{equation*}
+        C_t:= \{S\subseteq V_t: S \text{ vertex cover of } G_t\}, \quad C_t(U):= \{S\in C_t: S\cap \chi(t) = U\}
+    \end{equation*} be the set of all vertex covers and the set of all vertex covers containing $U\subseteq \chi(t)$. Let finally $n_t(U):= \min_{S\in C_t(U)}w(S)$. 
+
+    \begin{itemize}
+        \item $t$ is a leaf node: For all $U\subseteq \chi(t)$: \begin{equation*}
+            C_t(U) = \begin{cases}
+                \{U\}& U \text{ is vertex cover of } G_t\\
+                \emptyset& \text{otherwise}
+            \end{cases},\quad n_t(U) = \begin{cases}
+                w(U)& U \text{ is vertex cover of } G_t\\
+                \infty& \text{otherwise}
+            \end{cases}
+        \end{equation*}
+        \item $t$ is an introduce node, that is $\chi(t) = \chi(t')\cup \{v\}$. Note that for $v\in U$, any Set $S\cup \{v\}, S\in C_{t'}(U\backslash \{v\}$ covers all the new edges. Thus we define for all $U\subseteq \chi(t)$:\begin{equation*}
+            C_t(U) = \begin{cases}
+                \{S\cup \{v\}| S\in C_{t'}(U\backslash \{v\}\} & v\in U\\
+                \{S\in C_{t'}(U)| S\text{ covers }v\}& v\notin U
+            \end{cases}, \quad n_t(U) = \begin{cases}
+                n_{t'}(U)& v\notin U\land \forall w\in \chi(t): vw\in E\implies w\in U\\
+                n_{t'}(U\backslash\{v\})+1& v\in U\\
+                \infty& \text{otherwise}
+            \end{cases}
+        \end{equation*}
+        \item If $t$ is a forget node, htat is $\chi(t) = \chi(t')\backslash \{v\}$, then for all $U\subseteq \chi(t)$:\begin{equation*}
+            C_t(U) = C_{t'}(U)\cup C_{t'}(U\cup \{v\}, \quad n_t(U) = \min(n_{t'}(U), n_{t'}(U\cup \{v\})
+        \end{equation*}
+        \item If $t$ is a join node, that is $\chi(t) = \chi(t') = \chi(t'')$, then for all $U\subseteq \chi(t)$, \begin{equation*}
+            C_t(U) = \{S'\cup S''| S'\in C_{t'}(U), S''\in C_{t''}(U), \qquad n_t(U) = n_{t'}(U) + n_{t''}(U) - w(U)
+        \end{equation*}
+    \end{itemize}
+
+    This gives the following algorithm:
+    \begin{enumerate}
+        \item Compute a nice tree decomposition $(T,\chi)$ of $G$ in time $f(k)\cdot p(n)$
+        \item $\forall t\in T, U\subseteq \chi(t)$, initialize $n_t(U):= \infty$. As the number of such subsets is smaller than $2^{k+1}$, this has time $\mathcal O(2^kn)$.
+        \item Update $n_t(U)$ starting at the leaves and working up in time $\mathcal O(2^k k^2 n)$, as checking for each $U\in 2^{\chi(t)}$:\begin{itemize}
+            \item Leaves: Checking for vertex cover for $\leq k+1$ vertices, in time $\mathcal O(k^2)$
+            \item Introduce nodes: check $\leq k$ edges (if $v\notin U$)
+            \item Forget & join nodes: $\mathcal O(1)$
+        \end{itemize}
+        \item Output $\min _{U\subseteq \chi(r)}n_r(U)$ with $r$ the root
+    \end{enumerate}
+    This is FPT in total.
+\end{solving}
 \newpage
 
 %done
@@ -386,26 +434,68 @@
     A graph $G = (V,E)$ is $k$-connected, for some $k\geq 1$ if $|V|>k$ and for every set $S\subseteq V$ of fewer than $k$ elements the graph $G\backslash S$ is connected. Prove that a $k$-connected graph has treewidth at least $k$.
 \end{exercise}
 \begin{solving}
- For $k = 1$ this problem is trivial, as $G$ must be connected, thus has degree at least $1$ and it holds $d_G\leq \mathbb{tw}(G)$. 
- Assume now $k\geq 2$. Let $v\in V$ be an arbytrary node. Assume $\mathrm{deg}(v)<k$. Look at the graph $G'  = G\backslash \underbrace{\{v'\in V: v'\text{is neighbor of }v\}}_{=: S}$. As $G$ is $k$-connected and $|S|<k$ , $G'$ is connected. Furthermore, as $|V|>k$ it holds that $|V'| = |V|-\mathrm{deg}(v) \geq 2$. Thus, since $v\in G'$ there must be a neighbor $t$ of $v$ in $G'$, in contradiction to all neighbors being removed in the definition of $G'$. Thus, all vertices must have degree at least $k$. Therefore $\mathbb{tw}(G)\geq \min_{v\in V}\matrm{deg}(G)\geq k$.
+ For $k = 1$ this problem is trivial, as $G$ must be connected, thus has degree at least $1$ and it holds $d_G\leq \mathbf{tw}(G)$. 
+ Assume now $k\geq 2$. Let $v\in V$ be an arbytrary node. Assume $\mathrm{deg}(v)<k$. Look at the graph $G'  = G\backslash \underbrace{\{v'\in V: v'\text{is neighbor of }v\}}_{=: S}$. As $G$ is $k$-connected and $|S|<k$ , $G'$ is connected. Furthermore, as $|V|>k$ it holds that $|V'| = |V|-\mathrm{deg}(v) \geq 2$. Thus, since $v\in G'$ there must be a neighbor $t$ of $v$ in $G'$, in contradiction to all neighbors being removed in the definition of $G'$. Thus, all vertices must have degree at least $k$. Therefore $\mathbf{tw}(G)\geq \min_{v\in V}\matrm{deg}(G)\geq k$.
 \end{solving}
 \newpage
 
 \begin{exercise}[Chromatic Number and Treewidth]
     A $k$-coloring of a graph $G= (V,E)$ is a mapping $f:\to \{1,\dots, k\}$ such that $f(v)\neq f(w)$ for every edge $vw\in E$. The chromatic number $\chi(G)$ of a graph $G$ is the minimum $k$ such that $G$ admits a $k$-coloring. The \textsc{Chromatic Number} problem asks to compute the chromatic number $\chi(G)$ of a given input graph $G$. Show that \textsc{Chromatic Number} is fixed-parameter tractable parameterized by the treewidth of the imput graph.
 \end{exercise}
+\begin{solving}
+\begin{lemma}
+    For any graph $G$ with treewidth $p$ it holds that $\chi(G)\leq p+1$
+\end{lemma}
+\begin{proof}
+Proof by induction on $|V|$. For a graph with only one vertex this is clear. Assume now it holds for all graphs with vertex size $k$. Let $G$ be a graph with vertex size $k+1$
+    The minimum degree of $G$ is bounded by the treewidth $p$. There is thus a vertex $v\in V$ with degree bounded by $p$. Then if $G' = G\backslash \{v\}$  admits a proper $(p+1)$ coloring, $G$ also has a proper $(p+1)$ coloring, as we can just assign a color to $v$ that is different than its $\leq p$ neighbors). Then $$\chi(G)\leq \chi(G') \leq \mathbf{tw}(G')+1 \leq \mathbf{tw}(G)+1.$$
+\end{proof}
+    If we can decide the $k$-coloring problem in FPT time $f(w)p(n)$, with $p$ the treewidth, then also the problem for the chromatic number, by solving all $k$-coloring problems until we find a $k$-coloring, which takes time $\sum_{k\leq \chi(G)}f(w) p(n) \leq wf(w) p(n)$ and so is FPT. Consider thus the dynamic programming algorithm for $k$-coloring from the lecture: Assume we have a nice tree decomposition $(T, \chi)$, a node $t\in T$ and the graph $G_t$, then for all colorings $\sigma: \chi(t)\to \{1, \dots, k\}$ we define \begin{equation*}
+        n_t(\sigma) = \begin{cases}
+            \top & \sigma \text{ can be extended to a proper coloring of }G_t\\
+            \bot& \text{else}.
+        \end{cases}
+    \end{equation*}
+  Now: \begin{itemize}
+      \item If $t$ is a leaf-node, then for any $\sigma: \chi(t)\to C_k$ we can choose \begin{equation*}
+          n_t(\sigma) = \begin{cases}
+            \top & \sigma \text{ is a proper coloring of }G_t\\
+            \bot& \text{else}\end{cases}
+      \end{equation*}
+      \item If $t$ is an introduce-node, that is $\chi(t) = \chi(s)\cup \{v\}$, then for any $\sigma: \chi(t)\to C_k$ we can choose \begin{equation*}
+          n_t(\sigma) = \begin{cases}
+            n_s(\sigma|_{\chi(s)}) & \sigma \text{ is a proper coloring of } G_t\\
+            \bot& \text{else}\end{cases}
+      \end{equation*}
+      \item If $t$ is a forget-node, $\chi(s) = \chi(t)\cup \{v\}$, then choose \begin{equation*}
+          n_t(\sigma) = \bigvee_{c\in \{1, \dots, k\}} n_s(\sigma \cup \{v\mapsto c\})
+      \end{equation*}
+      \item If $t$ is a join-node, $\chi(t) = \chi(s) = \chi(r)$, then  choose $n_t(\sigma = n_s(\sigma)\land n_r(\sigma)$
+  \end{itemize}
+
+\end{solving}
 \newpage
 
+%done
 \begin{exercise}[Pathwidth of Interval Graph]
     A path decomposition is a tree decomposition $(P,\chi)$ where $P$ is a path and the pathwidth of a graph $G$ is the minimum width of a path decomposition of $G$. An interval graph is a graph where each vertex can be associated with an interval on the real line such that two vertices are adjacent if, and only if, their corresponding intervals intersect. Let $G$ be an interval graph such that each clique has size at most $k+1$. Prove that $G$ has pathwidth at most $k$.
 \end{exercise}
 \begin{solving}
-    \begin{figure}
+    \begin{figure}[H]
         \centering
-        \includegraphics{4/exercise/intervalgraph.svg}
-        \caption{Caption}
+        \includegraphics[scale = .3]{4/exercise/intervalgraph.png}
+        \caption{Source: Wikipedia}
         \label{fig:my_label}
     \end{figure}
+
+    For a set of intervals $\{I_1, \dots, I_n\}$ with $I_i = (a_i, b_i)$ we sort the endpoints in ascending order to get values $c_1,\dots, c_{2n}$. Consider now the elementary intervals $p_1 := [c_1,c_1], p_2 := (c_1,c_2), p_3 := [c2, c_2], p_4 := (c_2, c_3), \dots$. Now define the path decomposition $T = \{p_i, i\in I\}, \chi: T\to \mathcal P(T), \chi(p_i) = \{I_j\in \{I_1,\dots, I_n\}: I_j\cap p_i\neq \emptyset\}$. Then the axioms for a path decomposition hold:\begin{enumerate}
+        \item $\cup_{p\in T\}\chi(t) = V$ as surely every interval $I_i$ must cross one elementary interval.
+        \item Let there be an edge $I_iI_j$ in $G$. Then $I_i\cap I_j \neq \emptyset$ and there is an elementary interval $p_k$ that is contained in this intersection, so $I_i, I_j\in \chi(p_k)$.
+        \item since the $p_j$ are sorted ascending by their elementary interval, all $p_j's$ containing an interval $I$ are consecutive.
+    \end{enumerate}
+Now for a $(k+1)$-clique, $k+1$ intverals are all intersecting at a real number $r$ at the same time. In the bag of the elementary interval that contains this $r$, there are thus $k+1$ nodes. There also cannot be a node with more than $k+1$ intervals in it, as that would lead to a clique of more than $k+1$ intervals. Thus :\begin{equation*}
+    \mathbf{tw} \leq \text{maximal size of a node} -1 \leq k+1-1 = k
+\end{equation*}
 \end{solving}
 \newpage
 
