@@ -13,7 +13,62 @@
 
 \listoftheorems[ignoreall,show={exercise}]
 
+\newpage
 
+\begin{exercise}[(MI)LP Modeling]
+    Propose (mixed integer) linear programs for each of the following three functions such that the optimal objective value corresponds to $f_j(x_1,x_2), j = 1, 2, 3$. \begin{enumerate}
+        \item $f_1(x_1, x_2) = \min \{x_1,x_2\}$ with $0\leq x_i\leq C, i = 1,2$.
+        \item $f_2(x_1,x_2) = |x_1 - x_2|$ with $0\leq x_i\leq C, i = 1,2$.
+        \item $f_3(x_1,x_2) = x_1\mathrm{XOR} x_2$ with $x_i \in \{0,1\}, i=1,2$.
+    \end{enumerate}
+    Note: Your solutions need to work for arbitrary choices of $x_1$ and $x_2$. (e.g. enforcing $x_1\leq x_2$ is not allowed).
+\end{exercise}
+
+\begin{solving}
+    \begin{enumerate}
+        \item Assume that $x_1,x_2$ are constant then we model as \begin{align*}
+            \max \quad &z\\
+            \text{s.t.}\quad& z\leq x_1\\
+            & z\leq x_2\\
+        \end{align*}  
+         Assume that $x_1,x_2$ are variables, then we model as 
+         \begin{align*}
+            \max\quad& (1,0,0)^T\cdot(z, x_1, x_2)\\
+            \text{s.t.}\quad& z\leq x_1\\
+            & z\leq x_2\\
+            &x_1 \leq C\\
+            &x_2\leq C
+        \end{align*}  
+        \item Assume that $x_1,x_2$ are constant, then we model as \begin{align*}
+            \min\quad& z\\
+            \text{s.t.}\quad&z\geq x_1-x_2\\
+            &z\geq x_2-x_1\\
+        \end{align*}
+        Assume that $x_1,x_2$ are variables, then we model as \begin{align*}
+            \min\quad& z\\
+            \text{s.t.}\quad&z\geq x_1-x_2\\
+            &z\geq x_2-x_1\\
+            &x_1\leq C\\
+            &x_2\leq C
+        \end{align*}
+        \item Assume that $x_1,x_2$ are constant, then we model as \begin{align*}
+            \min\quad& z\\
+            \text{s.t.}\quad&z\geq x_1-x_2\\
+            &z\geq x_2-x_1\\
+        \end{align*}
+        Assume that $x_1,x_2$ are variables, then we model as \begin{align*}
+            \min\quad& B\\
+            \text{s.t.}\quad&z\geq x_1-x_2\\
+            &z\geq x_2-x_1\\
+            &x_1\in \{0,1\}\\
+            &x_2\leq \{0,1\}
+    \end{enumerate}
+\end{solving}
+
+
+\begin{exercise}
+    
+\end{exercise}
 
 
 \end{document} 
