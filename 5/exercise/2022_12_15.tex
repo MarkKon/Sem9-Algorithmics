@@ -109,6 +109,17 @@ Give appropriate values for $s$ and $t$ such that the linear program has \begin{
 \end{enumerate}
 (the problem should not be changed to a feasibility problem)
 \end{exercise}
+\begin{solving}
+    \begin{figure}[H]
+        \centering
+        \includegraphics{5/exercise/quick.eps}
+        \caption{Caption}
+        \label{fig:my_label}
+    \end{figure}
+\end{solving}
+
+
+\newpage
 
 \begin{exercise}[LP Duality]
     Given the following primal problem \begin{equation*}
@@ -123,7 +134,7 @@ Give appropriate values for $s$ and $t$ such that the linear program has \begin{
     \end{equation*}
     \begin{enumerate}
         \item Form the corresponding dual problem.
-        \item Show by complementary slackness that the primal solution $\mathbf x^* = (1.5,5, -1.5)$ is optimal.
+        \item Show by complementary slackness that the primal solution $x = (1.5,5, -1.5)$ is optimal.
     \end{enumerate}
 \end{exercise}
 \begin{solving}
@@ -137,10 +148,28 @@ Give appropriate values for $s$ and $t$ such that the linear program has \begin{
               & p_1 &  &  & & & \geq &0\\
               & &  &p_2   & & & \leq &0\\
         \end{array}
-        by using the rules from the lecture
         \end{equation*}
+        by using the rules from the lecture: \begin{figure}[H]
+            \centering
+            \includegraphics[scale = .5]{5/exercise/dual.png}
+            \label{fig:my_label}
+        \end{figure}
+        \item The theorem of complementary slackness states that feasible solutions $x, p$ to the primal and dual problems are optimal if and only if \begin{equation*}
+            p_i(a_i'x - b_i) = 0, (c_j-p'A_j)x_j = 0 \forall i, j
+        \end{equation*}
+        Note that $x$ is feasible, as \begin{equation*}
+        \begin{array}{rcrcrcr}
+             
+              -x_1 & + & x_2 &+ & x_3 & = 2 \geq &2\\
+              -5x_1 & + & 3x_2 &- & 5x_3 & = 15\leq &15\\
+               x_1 & + & x_2 &+ & x_3 & = &5\\
+               &  & x_2 & & & = 5 \geq &0\\
+              &  &  & & x_3 & = -\frac32\leq &0\\
+        \end{array}
+        \end{equation*}
+        This also directly shows $Ax= b$ and thus $a_i'x-b_i = 0$. Solving the linear equation system $pA = c$ gives the solution $(\frac 32, -\frac5{16}, \frac{23}{16})$ which is also feasible in the dual problem and fulfills $c_j-p'A_j = 0$. Thus, both $x$ and $p$ are optimal.
     \end{enumerate}
 \end{solving}
 
 
-\end{document} 
+\end{document}  
