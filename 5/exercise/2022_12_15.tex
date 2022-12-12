@@ -62,13 +62,85 @@
             &z\geq x_2-x_1\\
             &x_1\in \{0,1\}\\
             &x_2\leq \{0,1\}
+            \end{align*}
     \end{enumerate}
+
 \end{solving}
 
 
-\begin{exercise}
-    
+
+\begin{exercise}[LP Modeling]
+    Consider a communication network consisting of $n$ nodes which are connected by communication links. Let $A$ be the set of all links. Each link $(i,j)\in A$ allows one-way transmission from node $i$ to node $j$ and can carry up to $u_{ij}$ bits per second. There is a positive charge $c_{ij}$ per bit transmitted along that link. Each node $k$ generates data at the rate of $b^{kl}$ bits per second that have to be transmitted to node $l$, either through a direct link $(k,l)$ or by tracing a sequence of links. The goal is to choose paths along which all data reach their intended destinations, while minimizing the total cost. We allow the data with the same origin and destination to be split and be transmitted along different paths. Formulate this problem as a linear programming problem. Take care that bits reach their correct targets and not just any target!
 \end{exercise}
+\begin{solving}
+    Let $x_{ij}^{kl} \in \mathbb N$ denote the number of bits with origin $k$ and destination $l$ transmitted along $(i,j)$. Then consider the following optimization problem\begin{align}
+        \min \qquad & \sum_{(i,j)\in A} c_{ij}\left(\sum_{k,l} x_{ij}^{kl}\right)\\
+        \text{s.t.}\qquad & x_{ij}^{kl}\geq 0 &\forall i,j,k,l\in V\\
+        &\sum_{k,l}x_{ij}^{kl}\leq u_{ij}& \forall (i,j)\in A\label{2:upp}\\
+        & \sum_{j: (k,j)\in A} x_{kj}^{kl} = b^{kl}& \forall k,l\in V \label{2:dest}\\
+        & \sum_{i: (i,l)\in A} x_{il}^{kl} = b^{kl}& \forall k,l\in V \label{2:orig}\\
+        & \sum_{i: (i,j)\in A} x_{ij}^{kl} = \sum _{m: (i,m)\in A} x_{jm}^{kl} & \forall j,k,l, j\neq k, j\neq l \label{2:flow}
+    \end{align}
+    Then here \begin{enumerate}
+        \item [\eqref{2:upp}] implements the upper bound for each transmission line $(i,j)\in A$,
+        \item [\eqref{2:dest}] implements that node $k$ transmits $b^{kl}$ bits with destination $l$ to its neighbors,
+        \item [\eqref{2:orig}] implements that node $l$ receives $b^{kl}$ bits with of origin $k$,
+        \item [\eqref{2:flow}] implements that bits coming from $k$ with destination $l$ should flow through any $j\neq k, j\neq l$ unhindered.
+    \end{enumerate}
+\end{solving}
+
+\newpage
+
+\begin{exercise}[LP Feasible Region]
+    Draw the feasible region of the following linear program
+    \begin{align}
+        \max \quad & sx & +& ty\\
+        \text{s.t}& -2x&-& y &\geq & -7\\
+        &-3x &+&2y &\geq &0\\
+        &-x&+&4y&\leq &18\\
+        &&&y&\leq &4
+    \end{align}
+
+Give appropriate values for $s$ and $t$ such that the linear program has \begin{enumerate}
+    \item exactly one optimal solution,
+    \item multiple optimal solutions, where each one is bounded, where each one is bounded (i.e., none of its components has an arbitrarily large magnitude),
+    \item multiple optimal solutions, unbounded,
+    \item no optimal solution
+\end{enumerate}
+(the problem should not be changed to a feasibility problem)
+\end{exercise}
+
+\begin{exercise}[LP Duality]
+    Given the following primal problem \begin{equation*}
+        \begin{array}{crcrcrcr}
+             \min & 1.5 x_1 & + & 2x_2 &+ & 4.5x_3\\
+             \text{s.t.}&  -x_1 & + & x_2 &+ & x_3 & \geq &2\\
+             &  -5x_1 & + & 3x_2 &- & 5x_3 & \leq &15\\
+              &  x_1 & + & x_2 &+ & x_3 & = &5\\
+              &  &  & x_2 & & & \geq &0\\
+              & &  &  & & x_3 & \leq &0\\
+        \end{array}
+    \end{equation*}
+    \begin{enumerate}
+        \item Form the corresponding dual problem.
+        \item Show by complementary slackness that the primal solution $\mathbf x^* = (1.5,5, -1.5)$ is optimal.
+    \end{enumerate}
+\end{exercise}
+\begin{solving}
+    \begin{enumerate}
+        \item The corresponding dual problem is \begin{equation*}
+            \begin{array}{crcrcrcr}
+             \max & 2 p_1 & + & 15p_2 &+ & 5p_3\\
+             \text{s.t.}&  p_1 & + & 3p_2 &+ & p_3 & \leq &2\\
+             &  p_1 & + & -5p_2 &+ & p_3 & \geq &4.5\\
+              &  -p_1 & - & 5p_2 &+ & p_3 & = &1.5\\
+              & p_1 &  &  & & & \geq &0\\
+              & &  &p_2   & & & \leq &0\\
+        \end{array}
+        by using the rules from the lecture
+        \end{equation*}
+    \end{enumerate}
+\end{solving}
 
 
 \end{document} 
